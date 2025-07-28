@@ -1,0 +1,698 @@
+{
+  "openapi": "3.0.0",
+  "info": {
+    "title": "FinControl API",
+    "description": "API para aplicação de controle financeiro pessoal",
+    "version": "1.0.0"
+  },
+  "basePath": "/",
+  "servers": [
+    {
+      "url": "http://localhost:3000",
+      "description": "Servidor de desenvolvimento"
+    }
+  ],
+  "paths": {
+    "/users": {
+      "post": {
+        "tags": ["Usuários"],
+        "summary": "Criar novo usuário",
+        "description": "Cria um novo usuário no sistema",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateUserRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Usuário criado com sucesso",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/User"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Dados inválidos",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Usuário já existe",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        }
+      },
+      "get": {
+        "tags": ["Usuários"],
+        "summary": "Listar todos os usuários",
+        "description": "Retorna uma lista com todos os usuários cadastrados",
+        "responses": {
+          "200": {
+            "description": "Lista de usuários retornada com sucesso",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/User"
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Usuários não encontrados",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/users/{id}": {
+      "get": {
+        "tags": ["Usuários"],
+        "summary": "Buscar usuário por ID",
+        "description": "Retorna um usuário específico pelo seu ID",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "description": "ID do usuário",
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Usuário encontrado com sucesso",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/User"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Usuário não encontrado",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/card/{userId}": {
+      "post": {
+        "tags": ["Cartões"],
+        "summary": "Criar novo cartão",
+        "description": "Cria um novo cartão de crédito para um usuário específico",
+        "parameters": [
+          {
+            "name": "userId",
+            "in": "path",
+            "required": true,
+            "description": "ID do usuário proprietário do cartão",
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateCardRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Cartão criado com sucesso",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Card"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Dados inválidos",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Usuário não encontrado",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/card/{userId}/{cardId}": {
+      "delete": {
+        "tags": ["Cartões"],
+        "summary": "Deletar cartão",
+        "description": "Deleta um cartão específico",
+        "parameters": [
+          {
+            "name": "userId",
+            "in": "path",
+            "required": true,
+            "description": "ID do usuário proprietário do cartão",
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          {
+            "name": "cardId",
+            "in": "path",
+            "required": true,
+            "description": "ID do cartão a ser deletado",
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "Cartão deletado com sucesso"
+          },
+          "404": {
+            "description": "Cartão não encontrado",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/auth/login": {
+      "post": {
+        "tags": ["Autenticação"],
+        "summary": "Fazer login",
+        "description": "Autentica um usuário no sistema",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/LoginRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Login realizado com sucesso",
+            "headers": {
+              "Set-Cookie": {
+                "description": "Token de autenticação JWT",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UserDTO"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Email e senha são obrigatórios",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Email ou senha incorretos",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/auth/forgot-password": {
+      "post": {
+        "tags": ["Autenticação"],
+        "summary": "Solicitar recuperação de senha",
+        "description": "Envia um email para recuperação de senha",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ForgotPasswordRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Email de recuperação enviado com sucesso",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "result": {
+                      "type": "string",
+                      "description": "Mensagem de confirmação"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Email não encontrado",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/auth/reset-password": {
+      "post": {
+        "tags": ["Autenticação"],
+        "summary": "Redefinir senha",
+        "description": "Redefine a senha do usuário usando o token de recuperação",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ResetPasswordRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Senha redefinida com sucesso",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "example": "Password reset successfully"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Token expirado ou dados inválidos",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Usuário não encontrado",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/auth/authorizer": {
+      "get": {
+        "tags": ["Autenticação"],
+        "summary": "Verificar autenticação",
+        "description": "Verifica se o token de autenticação é válido",
+        "security": [
+          {
+            "cookieAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Token válido",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "authenticated": {
+                      "type": "boolean",
+                      "example": true
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Token inválido ou não fornecido",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "User": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "description": "ID único do usuário"
+          },
+          "name": {
+            "type": "string",
+            "description": "Nome do usuário"
+          },
+          "totalMoney": {
+            "type": "number",
+            "format": "float",
+            "description": "Saldo total do usuário"
+          },
+          "familyId": {
+            "type": "string",
+            "format": "uuid",
+            "nullable": true,
+            "description": "ID da família (opcional)"
+          }
+        },
+        "required": ["id", "name", "totalMoney"]
+      },
+      "CreateUserRequest": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "description": "Nome do usuário",
+            "example": "João Silva"
+          },
+          "totalMoney": {
+            "type": "number",
+            "format": "float",
+            "description": "Saldo inicial do usuário",
+            "minimum": 0.01,
+            "example": 1000.5
+          }
+        },
+        "required": ["name", "totalMoney"]
+      },
+      "Card": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "description": "ID único do cartão"
+          },
+          "name": {
+            "type": "string",
+            "description": "Nome do cartão"
+          },
+          "lastFourNumbers": {
+            "type": "string",
+            "description": "Últimos 4 dígitos do cartão",
+            "pattern": "^[0-9]{4}$"
+          },
+          "invoiceClosingDay": {
+            "type": "integer",
+            "description": "Dia do fechamento da fatura",
+            "minimum": 1,
+            "maximum": 31
+          },
+          "invoiceAmount": {
+            "type": "number",
+            "format": "float",
+            "description": "Valor atual da fatura"
+          },
+          "creditLimit": {
+            "type": "number",
+            "format": "float",
+            "description": "Limite de crédito do cartão"
+          },
+          "dueDate": {
+            "type": "integer",
+            "description": "Dia do vencimento da fatura",
+            "minimum": 1,
+            "maximum": 31
+          },
+          "userId": {
+            "type": "string",
+            "format": "uuid",
+            "description": "ID do usuário proprietário"
+          }
+        },
+        "required": [
+          "id",
+          "name",
+          "lastFourNumbers",
+          "invoiceClosingDay",
+          "invoiceAmount",
+          "creditLimit",
+          "dueDate",
+          "userId"
+        ]
+      },
+      "CreateCardRequest": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "description": "Nome do cartão",
+            "example": "Cartão Nubank"
+          },
+          "lastFourNumbers": {
+            "type": "string",
+            "description": "Últimos 4 dígitos do cartão",
+            "pattern": "^[0-9]{4}$",
+            "example": "1234"
+          },
+          "invoiceClosingDay": {
+            "type": "integer",
+            "description": "Dia do fechamento da fatura",
+            "minimum": 1,
+            "maximum": 31,
+            "example": 15
+          },
+          "invoiceAmount": {
+            "type": "number",
+            "format": "float",
+            "description": "Valor atual da fatura",
+            "example": 250.75
+          },
+          "creditLimit": {
+            "type": "number",
+            "format": "float",
+            "description": "Limite de crédito do cartão",
+            "example": 5000.0
+          },
+          "dueDate": {
+            "type": "integer",
+            "description": "Dia do vencimento da fatura",
+            "minimum": 1,
+            "maximum": 31,
+            "example": 25
+          }
+        },
+        "required": [
+          "name",
+          "lastFourNumbers",
+          "invoiceClosingDay",
+          "invoiceAmount",
+          "creditLimit",
+          "dueDate"
+        ]
+      },
+      "LoginRequest": {
+        "type": "object",
+        "properties": {
+          "email": {
+            "type": "string",
+            "format": "email",
+            "description": "Email do usuário",
+            "example": "usuario@exemplo.com"
+          },
+          "password": {
+            "type": "string",
+            "description": "Senha do usuário",
+            "minLength": 8,
+            "example": "minhasenha123"
+          }
+        },
+        "required": ["email", "password"]
+      },
+      "UserDTO": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "description": "Nome do usuário"
+          },
+          "email": {
+            "type": "string",
+            "format": "email",
+            "description": "Email do usuário"
+          },
+          "institution": {
+            "type": "string",
+            "description": "Instituição do usuário"
+          }
+        },
+        "required": ["name", "email", "institution"]
+      },
+      "ForgotPasswordRequest": {
+        "type": "object",
+        "properties": {
+          "email": {
+            "type": "string",
+            "format": "email",
+            "description": "Email do usuário para recuperação",
+            "example": "usuario@exemplo.com"
+          }
+        },
+        "required": ["email"]
+      },
+      "ResetPasswordRequest": {
+        "type": "object",
+        "properties": {
+          "token": {
+            "type": "string",
+            "description": "Token de recuperação de senha"
+          },
+          "password": {
+            "type": "string",
+            "description": "Nova senha",
+            "minLength": 8,
+            "example": "novasenha123"
+          },
+          "confirmPassword": {
+            "type": "string",
+            "description": "Confirmação da nova senha",
+            "minLength": 8,
+            "example": "novasenha123"
+          }
+        },
+        "required": ["token", "password", "confirmPassword"]
+      },
+      "Error": {
+        "type": "object",
+        "properties": {
+          "message": {
+            "type": "string",
+            "description": "Mensagem de erro"
+          },
+          "statusCode": {
+            "type": "integer",
+            "description": "Código de status HTTP"
+          }
+        },
+        "required": ["message"]
+      }
+    },
+    "securitySchemes": {
+      "bearerAuth": {
+        "type": "http",
+        "scheme": "bearer",
+        "bearerFormat": "JWT"
+      },
+      "cookieAuth": {
+        "type": "apiKey",
+        "in": "cookie",
+        "name": "gopaAuth"
+      }
+    }
+  },
+  "security": [
+    {
+      "bearerAuth": []
+    },
+    {
+      "cookieAuth": []
+    }
+  ]
+}

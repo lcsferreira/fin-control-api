@@ -1,0 +1,128 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Family {
+  id    String @id @default(uuid())
+  name  String
+  users User[]
+}
+
+model User {
+  id         String    @id @default(uuid())
+  name       String
+  totalMoney Float
+  expenses   Expense[]
+  cards      Card[]
+  incomes    Income[]
+  savings    Savings[]
+  family     Family?   @relation(fields: [familyId], references: [id])
+  familyId   String?
+}
+
+enum ExpenseType {
+  FIXED
+  VARIABLE
+  ONE_TIME
+}
+
+enum ExpenseCategory {
+  FOOD
+  SUBSCRIPTION
+  BILL
+  LOAN
+  LEISURE
+  HEALTH
+  GIFT
+  TRANSPORT
+  HOME
+  CLOTHES
+  OTHER_PERSONS
+  OTHER
+}
+
+enum PaymentMethod {
+  CREDIT_CARD
+  DEBIT_CARD
+  PIX
+  BANK_TRANSFER
+  CASH
+  OTHER
+}
+
+model Card {
+  id                String @id @default(uuid())
+  name              String
+  lastFourNumbers   String
+  invoiceClosingDay Int
+  invoiceAmount     Float
+  creditLimit       Float
+  dueDate           Int
+  userId            String
+  user              User   @relation(fields: [userId], references: [id])
+}
+
+model Expense {
+  id            String          @id @default(uuid())
+  name          String
+  amount        Float
+  type          ExpenseType
+  paymentMethod PaymentMethod
+  category      ExpenseCategory
+  description   String
+  date          DateTime
+  userId        String
+  user          User            @relation(fields: [userId], references: [id])
+}
+
+enum IncomeCategory {
+  SALARY
+  PIX
+}
+
+model Income {
+  id       String         @id @default(uuid())
+  name     String
+  amount   Float
+  category IncomeCategory
+  date     DateTime
+  userId   String
+  user     User           @relation(fields: [userId], references: [id])
+}
+
+model Savings {
+  id          String              @id @default(uuid())
+  name        String
+  totalAmount Float
+  entries     SavingsEntry[]
+  withdrawals SavingsWithdrawal[]
+  userId      String
+  user        User                @relation(fields: [userId], references: [id])
+}
+
+model SavingsEntry {
+  id        String   @id @default(uuid())
+  amount    Float
+  date      DateTime
+  savingsId String
+  savings   Savings  @relation(fields: [savingsId], references: [id])
+}
+
+model SavingsWithdrawal {
+  id        String   @id @default(uuid())
+  amount    Float
+  date      DateTime
+  savingsId String
+  savings   Savings  @relation(fields: [savingsId], references: [id])
+}
