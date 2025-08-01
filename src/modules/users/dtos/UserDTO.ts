@@ -9,6 +9,7 @@ export interface UserDTO {
   id: string;
   name: string;
   totalMoney: number;
+  moneyAvailable: number;
   familyId: string | null;
   cards: UserCardDTO[];
 }

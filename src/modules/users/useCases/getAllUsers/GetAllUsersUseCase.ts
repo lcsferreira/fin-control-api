@@ -21,6 +21,7 @@ export class GetAllUsersUseCase {
       id: user.id,
       name: user.name,
       totalMoney: user.totalMoney,
+      moneyAvailable: user.moneyAvailable,
       familyId: user.familyId,
       cards: user.cards.map((card) => ({
         id: card.id,

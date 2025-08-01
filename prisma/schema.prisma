@@ -20,15 +20,16 @@ model Family {
 }
 
 model User {
-  id         String    @id @default(uuid())
-  name       String
-  totalMoney Float
-  expenses   Expense[]
-  cards      Card[]
-  incomes    Income[]
-  savings    Savings[]
-  family     Family?   @relation(fields: [familyId], references: [id])
-  familyId   String?
+  id             String    @id @default(uuid())
+  name           String
+  totalMoney     Float
+  moneyAvailable Float
+  expenses       Expense[]
+  cards          Card[]
+  incomes        Income[]
+  savings        Savings[]
+  family         Family?   @relation(fields: [familyId], references: [id])
+  familyId       String?
 }
 
 enum ExpenseType {
@@ -62,7 +63,7 @@ enum PaymentMethod {
 }
 
 model Card {
-  id                String @id @default(uuid())
+  id                String        @id @default(uuid())
   name              String
   lastFourNumbers   String
   invoiceClosingDay Int
@@ -70,7 +71,16 @@ model Card {
   creditLimit       Float
   dueDate           Int
   userId            String
-  user              User   @relation(fields: [userId], references: [id])
+  user              User          @relation(fields: [userId], references: [id])
+  payments          CardPayment[]
+}
+
+model CardPayment {
+  id      String   @id @default(uuid())
+  cardId  String
+  card    Card     @relation(fields: [cardId], references: [id])
+  amount  Float
+  payedAt DateTime
 }
 
 model Expense {
