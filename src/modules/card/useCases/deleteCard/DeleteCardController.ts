@@ -13,7 +13,7 @@ export class DeleteCardController {
     });
 
     return response
-      .status(204)
+      .status(201)
       .json({ message: "Cartão deletado com sucesso" });
   }
 }

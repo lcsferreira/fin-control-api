@@ -10,6 +10,7 @@ export class GetUserByIdUseCase {
       },
       include: {
         cards: true,
+        expenses: true,
       },
     });
 
@@ -27,6 +28,16 @@ export class GetUserByIdUseCase {
         id: card.id,
         name: card.name,
         lastFourNumbers: card.lastFourNumbers,
+      })),
+      expenses: user.expenses.map((expense) => ({
+        id: expense.id,
+        name: expense.name,
+        amount: expense.amount,
+        type: expense.type,
+        paymentMethod: expense.paymentMethod,
+        category: expense.category,
+        description: expense.description,
+        date: expense.date,
       })),
     };
 
