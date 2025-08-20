@@ -12,10 +12,10 @@ const getAllUserCardsController = new GetAllUserCardsController();
 const getCardDetailsController = new GetCardDetailsController();
 const cardRoutes = Router();
 
-cardRoutes.post("/:userId", createCardController.handle);
-cardRoutes.delete("/:userId/:cardId", deleteCardController.handle);
-cardRoutes.post("/:cardId/pay", payCardController.handle);
 cardRoutes.get("/:userId", getAllUserCardsController.handle);
 cardRoutes.get("/:cardId", getCardDetailsController.handle);
+cardRoutes.post("/:userId", createCardController.handle);
+cardRoutes.post("/:cardId/pay", payCardController.handle);
+cardRoutes.delete("/:userId/:cardId", deleteCardController.handle);
 
 export { cardRoutes };
