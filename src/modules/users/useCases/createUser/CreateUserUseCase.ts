@@ -11,6 +11,14 @@ export class CreateUserUseCase {
   }: CreateUserDTO): Promise<User> {
     // Regras de negócio
     // Se o usuário já existe
+    if (!name) {
+      throw new AppError("Nome do usuário não pode ser vazio", 400);
+    }
+
+    if (!totalMoney) {
+      throw new AppError("Saldo total não pode ser vazio", 400);
+    }
+
     const userAlreadyExists = await prisma.user.findFirst({
       where: {
         name,
@@ -32,7 +40,7 @@ export class CreateUserUseCase {
       data: {
         name,
         totalMoney,
-        moneyAvailable,
+        moneyAvailable: moneyAvailable || 0,
       },
     });
 

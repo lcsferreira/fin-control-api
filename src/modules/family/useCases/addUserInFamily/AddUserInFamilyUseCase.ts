@@ -2,22 +2,16 @@ import { AppError } from "../../../../errors/AppError";
 import { prisma } from "../../../../prisma/client";
 import { FamilyDTO } from "../../dtos/FamilyDTO";
 
-export class CreateFamilyUseCase {
+export class AddUserInFamilyUseCase {
   async execute({
     name,
     userId,
+    familyId,
   }: {
     name: string;
     userId: string;
+    familyId: string;
   }): Promise<FamilyDTO> {
-    if (!userId) {
-      throw new AppError("Usuário não pode ser vazio", 400);
-    }
-
-    if (!name) {
-      throw new AppError("Nome da família não pode ser vazio", 400);
-    }
-
     const user = await prisma.user.findUnique({
       where: { id: userId },
     });
@@ -26,11 +20,20 @@ export class CreateFamilyUseCase {
       throw new AppError("Usuário não encontrado", 404);
     }
 
+    const familyAlreadyExists = await prisma.family.findUnique({
+      where: { id: familyId },
+    });
+
+    if (!familyAlreadyExists) {
+      throw new AppError("Família não encontrada", 404);
+    }
+
     if (user.familyId) {
       throw new AppError("Usuário já está em uma família", 400);
     }
 
-    const family = await prisma.family.create({
+    const family = await prisma.family.update({
+      where: { id: familyId },
       data: { name, users: { connect: { id: userId } } },
       include: {
         users: {
